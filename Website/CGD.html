@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Combination of Multiple Global Descriptors for Image Retrieval</title>
+</head>
+<body>
+<!--Header with two columns containing personal infos-->
+<div class="header">
+    <div class="text_margin">
+        <div class="row">
+            <div class="column_logo left_logo"> <p><b>Lilian Bour - </b>Master's student in computer science specialized in vision and intelligent machine at University of Paris</p>
+            <p><b>Email :</b> lilianbour0@gmail.com | <b>Tel. :</b> +33.6.29.33.29.97 | <b>GitHub :</b> <a href="https://github.com/LilianBour" target="_blank" rel="noopener noreferrer">https://github.com/LilianBour</a> | <b>LinkedIn :</b> <a href="https://www.linkedin.com/in/lilian-bour-99b9121a1/" target="_blank" rel="noopener noreferrer"> https://www.linkedin.com/in/lilian-bour </a></p></div>
+            <div class="column_logo right_logo"> <a href="https://u-paris.fr/en/" target="_blank" rel="noopener noreferrer"><img class="two" src="https://pbs.twimg.com/media/EN6ZheBXsAYZR6y.png" alt="University Logo"></a>
+                 </div>
+        </div>
+    </div>
+</div>
+
+<div class="core">
+    <div class="text_margin">
+        <h1>Implementation project : Combination of Multiple Global Descriptors for Image Retrieval</h1>
+
+        <h2>1. Introduction</h2>
+        <p>The goal of this project is to implement the GCD (combination of multuple global descriptors) model presented in the article of Jun, Ko et al (figure 1). And to evaluate the model with the same dataset such as CARS196 and CUB200-2011.</p>
+        <!--Centered image with legend-->
+        <p class="center_image"><img class="one" src="Images\CGD_Framework.png" alt="CGD Model"> </p> 
+        <p class="center_image">Figure 1. CGD Framework</p> 
+        <h2>2. Method</h2>
+        <h3>a. CNN Backbone</h3>
+        <p>ResNet-50 is used, but the down-sampling operation between the step 3 and 4 is removed to improve performances. The input will be an image of size 224x224 and the output a feature map of size 14x14.
+             Furthermore, a batch size of 128, Temperature for softmax of 0.5 and a Margin m for the triplet loss of 0.1 are used. The input will be :</p>
+        <ul>
+            <li>resized to 254x254, cropped randomly to 224x224 and finally fliped horizontally randomly during training</li>
+            <li>resized to 224x224 during for the tests</li>
+        </ul> 
+        <h3>b. Main module : Multiple Global Descriptors</h3>
+        <p>Multiple global descriptors can be used before concatenating the results of the feature vectors. For example : </p>
+        <ul>
+            <li>Sum pooling of convolutions (<b>SPoC</b>)</li>
+            <li>Maximum activation of convolutions (<b>MAC</b>) </li>
+            <li>Generalized mean pooling (<b>GeM</b>)</li>
+        </ul>
+        <p>First, the global descriptors will use a pooling process on the Outputs X of size CxHxW. The result will then see it's dimensionality reduced, and will be normalized.
+            After this the feature vectors will be combined using concatenation and l2-normalization.
+        </p>
+        <h3>b. Auxiliary Module : Classification Loss</h3>
+        <p>The auxiliary module will be used to fine tune the CNN backbone with the first global descriptor using a classification defined on the figure 2.</p>
+        <p class="center_image"><img class="one" src="Images\LSoftmax_formula.png" alt="Softmax formula"> </p> 
+        <p class="center_image">Figure 2. Softmax formula</p> 
+        <p>With : </p>
+        <ul>
+            <li>N : batch size</li>
+            <li>M : number of classes</li>
+            <li>yi : identity label of ith input</li>
+            <li>W : trainable weight</li>
+            <li>b : bias</li>
+            <li>f : first Global Descriptors </li>
+            <li>T : temperature set to default value 1</li>
+        </ul>
+        
+
+        <!--Example two columns-->
+        <div class="row">
+            <div class="column left"></div>
+            <div class="column middle"></div>
+            <div class="column right"></div>
+        </div>
+
+
+        <h2>3. Experiments and Results</h2>
+        
+    </div>
+</div>
+</body>
+
+
+<!--CSS-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=B612">
+<style>
+    *{
+    font-family: 'B612';
+    }
+    body { margin:0; }
+    a:link, a:visited {
+    color:  rgb(230, 230, 230);
+    text-decoration: none;
+    }
+
+    a:hover, a:active {
+    color: rgb(255, 255, 255);
+    }
+
+    .center_image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 45%;
+    }
+    .core {
+    text-align: left;
+    background: rgb(230, 230, 230);
+    color: rgb(15, 15, 15);
+    padding: 0.1px;
+    height: 100%;
+    width:100%;
+    }
+
+    .text_margin {
+    margin : 10px;
+    }
+    
+    .header {
+    padding: 0.1px;
+    text-align: left;
+    background: #383838;
+    color: white;
+    height: 100%;
+    width:100%;
+
+    }
+
+    img.one {
+    height: 50%;
+    width: 50%;
+    min-width:750px;
+    }
+    img.two {
+    height: 85px;
+    width: 85px;
+    min-width:50px;
+    }
+    .column_logo {
+    float: left;
+    }
+
+    .left_logo {
+    width: 95%;
+    }
+    .middle_logo {
+    width: 1%;
+    }
+    .right_logo {
+    width: 1%;
+    }
+ 
+    .column {
+    float: left;
+    }
+
+    .left {
+    width: 30%;
+    }
+    .middle {
+    width: 1%;
+    }
+    .right {
+    width: 69%;
+    }
+    .row:after {
+    content: "";
+    display: table;
+    clear: both;
+    }
+    @media screen and (max-width: 1000px) {
+    .column {
+    width: 100%;
+    }
+}
+</style>
+
+</html>
