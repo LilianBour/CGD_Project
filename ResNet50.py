@@ -64,7 +64,7 @@ def res_conv(x, s, filters):
   return x
 
 def resnet50():
-  input_im = Input(shape=(Data_Loading.train_img.shape[1], Data_Loading.train_img.shape[2], Data_Loading.train_img.shape[3])) # cifar 10 images size
+  input_im = Input(shape=(Data_Loading.train_img.shape[1], Data_Loading.train_img.shape[2], Data_Loading.train_img.shape[3])) #images size
   x = ZeroPadding2D(padding=(3, 3))(input_im)
 
   #1st stage, contains maxpooling
@@ -85,7 +85,7 @@ def resnet50():
   x = res_id(x, filters=(128, 512))
 
   #4th stage
-  x = res_conv(x, s=2, filters=(256, 1024))#TODO Modify s to 1 to remove down-sampling ?
+  x = res_conv(x, s=1, filters=(256, 1024))#TODO Modify s to 1 to remove down-sampling ?
   x = res_id(x, filters=(256, 1024))
   x = res_id(x, filters=(256, 1024))
   x = res_id(x, filters=(256, 1024))
