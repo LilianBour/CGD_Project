@@ -49,7 +49,7 @@ class BatchTripletLoss(nn.Module):
 
 # PART 2 --Train--
 #Set param various
-epochs = 10
+epochs = 20
 batch = 32
 temperature=0.5
 margin=0.1
@@ -57,7 +57,8 @@ evaluation={'loss':[],'acc':[]}
 
 #Load data
 Data_Name="CUB200"
-Train_loader,Test_loader,Len_train,Len_test,LabelNb_LabelName=Data_Load(Data_Name,batch)
+Train_loader,Test_loader,Len_train,Len_test,LabelNb_LabelName,Image_Label_test,ImageName_Idx_Test=Data_Load(Data_Name,batch)
+eval_dict = {'test': {'data_loader': Test_loader}}
 #Define model (CGD here)
 Dim=1536
 Global_Descriptors = ['S','G','M']
@@ -104,17 +105,25 @@ if __name__=="__main__":
         accuracy_list[epoch]=(TP/T)*100
         step_decay.step()
         #TODO add validation if possible
+
         print("Epoch ", epoch, "; train loss = ", train_loss[epoch], "; Accuracy = ", accuracy_list[epoch])
+        data_base={}
         if train_loss[epoch] < best_loss :
+            data_base['test_images'] = Image_Label_test[0]
+            data_base['test_labels'] = Image_Label_test[1]
+            data_base['test_features'] = eval_dict['test']['features']
             print("Model Saved because : ",train_loss[epoch],"<",best_loss)
             best_loss=train_loss[epoch]
             torch.save(model.state_dict(),"C:\\Users\\lilia\\github\\CGD_Project\\Models\\model_"+str(epoch)+"_"+Data_Name+".pt")
+            torch.save(data_base, "C:\\Users\\lilia\\github\\CGD_Project\\Models\\data_" + str(epoch) + "_" + Data_Name + ".pth")
+
 
 
 #TODO Add test code
-#TODO check todos
+#TODO add recall an precision ?
 #TODO add visualisation ranking
 #TODO add graph to visualize accurary and loss
-#TODO add recall an precision ?
 #TODO add other datasets
+#TODO check todos + review
+#TODO Dataload randFalse->True
 #TODO try to set batch to 128

@@ -3,3 +3,4 @@ venv/*
 Data/*
 Models/*
 Models/model_0_CUB200.pt
+Image_retrieval/*

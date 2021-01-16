@@ -27,9 +27,11 @@ def Data_Load(data_name,batch_size=128):
         LabelNb_LabelName=[]
         Image_Label_train=[]
         Image_Label_test=[]
+        ImageName_Idx_Test=[]
         for i in label_names_file:
             LabelNb_LabelName.append(tuple((i.split()[0],i.split()[1])))
         c=0
+        idx=0
         for (i,j,k) in zip(images_names_file,images_label_file,train_test_split_file):
             img=Image.open(full_path+i.split()[1]).convert('RGB')
             #img=cv2.imread(full_path+i.split()[1])
@@ -39,6 +41,8 @@ def Data_Load(data_name,batch_size=128):
                 Image_Lab = [img,torch.as_tensor(int(j.split()[1]),dtype=torch.int64)]  # ((IMG,LABEL)
                 Image_Label_train.append(Image_Lab)
             if k.split()[1]=='0':
+                ImageName_Idx_Test.append([i.split()[1],idx])
+                idx=idx+1
                 img = transform_test(img)
                 Image_Lab = [img, torch.as_tensor(int(j.split()[1]),dtype=torch.int64)]  # ((IMG,LABEL)
                 Image_Label_test.append(Image_Lab)
@@ -51,7 +55,7 @@ def Data_Load(data_name,batch_size=128):
         Train_Loader = DataLoader(Image_Label_train, batch_size=batch_size, shuffle=False, num_workers=0)
         Test_Loader = DataLoader(Image_Label_test, batch_size=batch_size, shuffle=False, num_workers=0)
 
-    return Train_Loader,Test_Loader,Len_train,Len_test,LabelNb_LabelName
+    return Train_Loader,Test_Loader,Len_train,Len_test,LabelNb_LabelName,Image_Label_test,ImageName_Idx_Test
 
 
 if __name__ == '__main__':
