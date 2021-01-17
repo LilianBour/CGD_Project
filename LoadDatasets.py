@@ -1,3 +1,5 @@
+import random
+
 import torch
 from PIL import Image
 import torchvision.transforms as transforms
@@ -6,6 +8,7 @@ import cv2
 
 def Data_Load(data_name,batch_size=128):
     if data_name=="CUB200":
+        #OVERFITTING not enough data for the training part maybe
         transform_train = transforms.Compose(
             [transforms.Resize((254,254)),
             transforms.RandomCrop((224,224)),
@@ -25,7 +28,7 @@ def Data_Load(data_name,batch_size=128):
         train_test_split_file= open(r"Data/CUB_200_2011/train_test_split.txt")
         label_names_file= open(r"Data/CUB_200_2011/classes.txt")
         LabelNb_LabelName=[]
-        Image_Label_train=[]
+        Image_Label_training=[]
         Image_Label_test=[]
         ImageName_Idx_Test=[]
         for i in label_names_file:
@@ -38,24 +41,33 @@ def Data_Load(data_name,batch_size=128):
             #Image_Lab=[i.split()[0],tuple((img,j[-4:-1]))] (ID,(IMG,LABEL)
             if k.split()[1]=='1':
                 img = transform_train(img)
-                Image_Lab = [img,torch.as_tensor(int(j.split()[1]),dtype=torch.int64)]  # ((IMG,LABEL)
-                Image_Label_train.append(Image_Lab)
+                Image_Lab = [img,int(j.split()[1])]  # ((IMG,LABEL) // torch.as_tensor(int(j.split()[1]),dtype=torch.int64)
+                Image_Label_training.append(Image_Lab)
             if k.split()[1]=='0':
                 ImageName_Idx_Test.append([i.split()[1],idx])
                 idx=idx+1
                 img = transform_test(img)
-                Image_Lab = [img, torch.as_tensor(int(j.split()[1]),dtype=torch.int64)]  # ((IMG,LABEL)
+                Image_Lab = [img, torch.as_tensor(int(j.split()[1]),dtype=torch.int64)]  # torch.as_tensor(int(j.split()[1]),dtype=torch.int64)
                 Image_Label_test.append(Image_Lab)
             c+=1
             #print("Loading images : ",round(c/11788*100,2),"/100%")
             #if c ==1000:#TODO Remove later just to test net
                 #break
+
+        #Creating validation set from test set. Test = 80%, Validation = 20%
+        random.shuffle(Image_Label_training)
+        Image_Label_train=Image_Label_training[:int((0.8*len(Image_Label_training)))]
+        Image_Label_val=Image_Label_training[int((0.8*len(Image_Label_training))):]
+
         Len_train=len(Image_Label_train)
+        Len_val=len(Image_Label_val)
         Len_test=len(Image_Label_test)
-        Train_Loader = DataLoader(Image_Label_train, batch_size=batch_size, shuffle=False, num_workers=0)
+
+        Train_Loader = DataLoader(Image_Label_train, batch_size=batch_size, shuffle=True, num_workers=0)
+        Validation_Loader = DataLoader(Image_Label_val, batch_size=batch_size, shuffle=True, num_workers=0)
         Test_Loader = DataLoader(Image_Label_test, batch_size=batch_size, shuffle=False, num_workers=0)
 
-    return Train_Loader,Test_Loader,Len_train,Len_test,LabelNb_LabelName,Image_Label_test,ImageName_Idx_Test
+    return Train_Loader,Validation_Loader,Test_Loader,Len_train,Len_val,Len_test,LabelNb_LabelName,Image_Label_test,ImageName_Idx_Test
 
 
 if __name__ == '__main__':

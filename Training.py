@@ -49,7 +49,7 @@ class BatchTripletLoss(nn.Module):
 
 # PART 2 --Train--
 #Set param various
-epochs = 20
+epochs = 30
 batch = 32
 temperature=0.5
 margin=0.1
@@ -57,25 +57,26 @@ evaluation={'loss':[],'acc':[]}
 
 #Load data
 Data_Name="CUB200"
-Train_loader,Test_loader,Len_train,Len_test,LabelNb_LabelName,Image_Label_test,ImageName_Idx_Test=Data_Load(Data_Name,batch)
-eval_dict = {'test': {'data_loader': Test_loader}}
+Train_loader, Validation_Loader,Test_loader, Len_train, Len_val,Len_test, LabelNb_LabelName, Image_Label_test,ImageName_Idx_Test =Data_Load(Data_Name,batch)
 #Define model (CGD here)
 Dim=1536
 Global_Descriptors = ['S','G','M']
 nb_classes=len(LabelNb_LabelName)+1
 model=CGD(Global_Descriptors,Dim,nb_classes).to(device)
-optimizer=Adam(model.parameters(),lr=1e-4)
+optimizer=Adam(model.parameters(),lr=1e-4)#1e-4 was the start changed because loss kept increasing but with 1e-8 accuracy increase slowly
 step_decay = MultiStepLR(optimizer, milestones=[int(0.5 * epochs), int(0.75 * epochs)], gamma=0.1) #Change the lr at 50% a,d 75% (not indicated in the article)
 Triplet_Loss = BatchTripletLoss(margin=margin) #TODO
 
 #Load Data
-#TODO add validation if possible
 #Train
 if __name__=="__main__":
     best_loss=float('inf')
     train_loss=[]
     accuracy_list=[]
+    val_loss = []
+    val_accuracy_list = []
     for epoch in range(epochs+1):
+        print("Starting epoch ",epoch)
         #Train
         model.train()
         train_loss.append(0)
@@ -102,28 +103,65 @@ if __name__=="__main__":
             T += image.size(0)
             train_loss[epoch]=T_loss.item()*image.size(0)
         train_loss[epoch]= train_loss[epoch]/Len_train
-        accuracy_list[epoch]=(TP/T)*100
+        accuracy_list[epoch]=TP/T
         step_decay.step()
-        #TODO add validation if possible
+        #Validation
+        with torch.no_grad():
+            model.eval()
+            val_loss.append(0)
+            val_accuracy_list.append(0)
+            TP = 0
+            T = 0
+            for image, label in tqdm(Validation_Loader):
+                image = image.to(device)
+                label = label.to(device)
+                GDs, Cl = model(image)
+                Rk_loss = Triplet_Loss(GDs, label)
+                CrossLoss = nn.CrossEntropyLoss()
+                Cl_loss = CrossLoss(Cl, label)
+                T_loss = Rk_loss + Cl_loss
+                pred = torch.argmax(Cl, dim=-1)
+                TP += torch.sum(pred == label).item()
+                T += image.size(0)
+                val_loss[epoch] = T_loss.item() * image.size(0)
+            val_loss[epoch] = val_loss[epoch] / Len_val
+            val_accuracy_list[epoch] = TP / T
 
-        print("Epoch ", epoch, "; train loss = ", train_loss[epoch], "; Accuracy = ", accuracy_list[epoch])
-        data_base={}
-        if train_loss[epoch] < best_loss :
-            data_base['test_images'] = Image_Label_test[0]
-            data_base['test_labels'] = Image_Label_test[1]
-            data_base['test_features'] = eval_dict['test']['features']
-            print("Model Saved because : ",train_loss[epoch],"<",best_loss)
-            best_loss=train_loss[epoch]
+        print("Epoch ", epoch, "; Train loss = ", train_loss[epoch], "; Train Accuracy = ", accuracy_list[epoch],"; Val loss = ", val_loss[epoch], "; Val Accuracy = ", val_accuracy_list[epoch], )
+        if val_loss[epoch] < best_loss :
+            print("Model Saved because : ",val_loss[epoch],"<",best_loss)
+            best_loss=val_loss[epoch]
             torch.save(model.state_dict(),"C:\\Users\\lilia\\github\\CGD_Project\\Models\\model_"+str(epoch)+"_"+Data_Name+".pt")
-            torch.save(data_base, "C:\\Users\\lilia\\github\\CGD_Project\\Models\\data_" + str(epoch) + "_" + Data_Name + ".pth")
 
 
+    import matplotlib.pyplot as plt
+    import matplotlib.patches as mpatches
 
-#TODO Add test code
+    # Plot Losses
+    plt.subplot(1, 2, 1)
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.title("loss curve")
+    TRAIN_LOSS = mpatches.Patch(color='Blue', label='Training Loss')
+    VALIDATION_LOSS = mpatches.Patch(color='Orange', label='Validation Loss')
+    plt.legend(handles=[TRAIN_LOSS,VALIDATION_LOSS])
+    plt.plot(range(len(train_loss)), train_loss,label="TRAIN_LOSS")
+    plt.plot(range(len(val_loss)), val_loss,label='VALIDATION_LOSS')
+    # Plot Accurarcy
+    plt.subplot(1, 2, 2)
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.title("accuracy curve")
+    TRAIN_ACC = mpatches.Patch(color='Blue', label='Training Accuracy')
+    VALIDATION_ACC = mpatches.Patch(color='Orange', label='Validation Accuracy')
+    plt.legend(handles=[TRAIN_ACC,VALIDATION_ACC])
+    plt.plot(range(len(accuracy_list)),accuracy_list,label="TRAIN_ACC")
+    plt.plot(range(len(val_accuracy_list)), val_accuracy_list,label='VALIDATION_ACC')
+    plt.tight_layout()
+    plt.show()
+
+#TODO 1.check todos + review
+#TODO 2.add other datasets
+
 #TODO add recall an precision ?
-#TODO add visualisation ranking
-#TODO add graph to visualize accurary and loss
-#TODO add other datasets
-#TODO check todos + review
-#TODO Dataload randFalse->True
 #TODO try to set batch to 128

@@ -60,7 +60,7 @@ if __name__ == '__main__':
     # Load data
     Triplet_Loss = BatchTripletLoss(margin=0.1)  # TODO
     batch = 32
-    Train_loader, Test_loader, Len_train, Len_test, LabelNb_LabelName, Image_Label_test,ImageName_Idx_Test = Data_Load(Data_Name, batch)
+    Train_loader, Validation_Loader,Test_loader, Len_train, Len_val,Len_test, LabelNb_LabelName, Image_Label_test,ImageName_Idx_Test = Data_Load(Data_Name, batch)
     Dim = 1536
     Global_Descriptors = ['S', 'G', 'M']
     nb_classes = len(LabelNb_LabelName) + 1
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     #Load model
     model = CGD(Global_Descriptors, Dim, nb_classes).to(device)
     path = "C:\\Users\\lilia\\github\\CGD_Project\\Models\\"
-    name = "model_0_CUB200.pt"
+    name = "model_21_CUB200.pt"
     model.load_state_dict(torch.load(path + name))
 
     #Set data for image retrieval
@@ -103,13 +103,14 @@ if __name__ == '__main__':
                 T += image.size(0)
                 train_loss[0] = T_loss.item() * image.size(0)
             train_loss[0] = train_loss[0] / Len_train
-            accuracy_list[0] = (TP / T) * 100
+            accuracy_list[0] = TP / T
             data_test_features=torch.cat(data_test_features,dim=0)
             print("Epoch ", 0, "; train loss = ", train_loss[0], "; Accuracy = ", accuracy_list[0])
 
 
     # PART 2 --Image Retrieval--
     img_name = "017.Cardinal/Cardinal_0047_17673.jpg"
+    #img_name = "101.White_Pelican/White_Pelican_0025_97604.jpg"
     query_img_name= full_path+img_name
     #data_base_name= "C:\\Users\\lilia\\github\\CGD_Project\\Models\\data_0_" + Data_Name + ".pth"
     retrieval_num = 10

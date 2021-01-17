@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn #contain function to build a network -> https://pytorch.org/docs/stable/nn.html
+from torchvision.models.utils import load_state_dict_from_url
 
 # -- PART 1 : Building the blocks composing ResNet --
 class Basic(nn.Module):
@@ -149,7 +150,9 @@ class ResNet(nn.Module):
         return x
 
 def ResNet50(**kwargs):
-    return ResNet(BottleNeck, [3, 4, 6, 3],**kwargs)
+    model = ResNet(BottleNeck, [3, 4, 6, 3],**kwargs)
+    state_dict=load_state_dict_from_url("https://download.pytorch.org/models/resnet50-19c8e357.pth",progress=True)
+    return model
 
 #Comparison Models (Ours vs Original)
 #Thanks to https://text-compare.com we can see that we get 14x14 FM instead of 7x7 due to the removing of the downsampling between stage 3 and stage 4
