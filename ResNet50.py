@@ -15,7 +15,7 @@ class Basic(nn.Module):
             raise ValueError('BasicBlock only supports groups=1 and base_width=64')
         if padding > 1:
             raise NotImplementedError("Dilation/Padding > 1 not supported in BasicBlock")
-        # --W--self.conv1/self.downsamble  downsample when stride !=1 --W--
+        # --WARNING--self.conv1/self.downsamble  downsample when stride !=1 --WARNING--
         #Part 1
         self.conv1=nn.Conv2d(input,output, kernel_size=3, stride=stride, padding=1, groups=1, dilation=1, bias=False)
         self.norm1=normalisation_layer(output)

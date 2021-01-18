@@ -49,19 +49,19 @@ class BatchTripletLoss(nn.Module):
 
 # PART 2 --Train--
 #Set param various
-epochs = 30
+epochs = 2
 batch = 32
 temperature=0.5
 margin=0.1
 evaluation={'loss':[],'acc':[]}
 
 #Load data
-Data_Name="CUB200"
+Data_Name="IRMA_XRAY"
 Train_loader, Validation_Loader,Test_loader, Len_train, Len_val,Len_test, LabelNb_LabelName, Image_Label_test,ImageName_Idx_Test =Data_Load(Data_Name,batch)
 #Define model (CGD here)
 Dim=1536
 Global_Descriptors = ['S','G','M']
-nb_classes=len(LabelNb_LabelName)+1
+nb_classes=len(LabelNb_LabelName)+1 #TODO +1???
 model=CGD(Global_Descriptors,Dim,nb_classes).to(device)
 optimizer=Adam(model.parameters(),lr=1e-4)#1e-4 was the start changed because loss kept increasing but with 1e-8 accuracy increase slowly
 step_decay = MultiStepLR(optimizer, milestones=[int(0.5 * epochs), int(0.75 * epochs)], gamma=0.1) #Change the lr at 50% a,d 75% (not indicated in the article)
@@ -131,7 +131,7 @@ if __name__=="__main__":
         if val_loss[epoch] < best_loss :
             print("Model Saved because : ",val_loss[epoch],"<",best_loss)
             best_loss=val_loss[epoch]
-            torch.save(model.state_dict(),"C:\\Users\\lilia\\github\\CGD_Project\\Models\\model_"+str(epoch)+"_"+Data_Name+".pt")
+            torch.save(model.state_dict(),"C:\\Users\\lilia\\github\\CGD_Project\\Models\\"+Data_Name+"\\model_"+str(epoch)+"_"+Data_Name+".pt")
 
 
     import matplotlib.pyplot as plt

@@ -3,10 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="8b124e8d-2a41-4f50-89fd-a8f38b1b4049" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CGD.py" beforeDir="false" afterPath="$PROJECT_DIR$/CGD.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LoadDatasets.py" beforeDir="false" afterPath="$PROJECT_DIR$/LoadDatasets.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ResNet50.py" beforeDir="false" afterPath="$PROJECT_DIR$/ResNet50.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Test.py" beforeDir="false" afterPath="$PROJECT_DIR$/Test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Training.py" beforeDir="false" afterPath="$PROJECT_DIR$/Training.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Try_Some_Stuff.py" beforeDir="false" afterPath="$PROJECT_DIR$/Try_Some_Stuff.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,27 +40,6 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager" selected="Python.Test (1)">
-    <configuration name="CGD" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="CGD_Project" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/CGD.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="LoadDatasets (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="CGD_Project" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -143,13 +124,34 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Try_Some_Stuff" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="CGD_Project" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Try_Some_Stuff.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.Test (1)" />
+        <item itemvalue="Python.Try_Some_Stuff" />
         <item itemvalue="Python.Training" />
         <item itemvalue="Python.LoadDatasets (1)" />
         <item itemvalue="Python.Test" />
-        <item itemvalue="Python.CGD" />
       </list>
     </recent_temporary>
   </component>
@@ -191,29 +193,29 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="739" y="274" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1610481632136" />
-    <state width="1899" height="93" key="GridCell.Tab.0.bottom" timestamp="1610900868022">
+    <state width="1899" height="349" key="GridCell.Tab.0.bottom" timestamp="1611001604695">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="93" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1610900868022" />
-    <state width="1899" height="93" key="GridCell.Tab.0.center" timestamp="1610900868022">
+    <state width="1899" height="349" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1611001604695" />
+    <state width="1899" height="349" key="GridCell.Tab.0.center" timestamp="1611001604695">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="93" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1610900868022" />
-    <state width="1899" height="93" key="GridCell.Tab.0.left" timestamp="1610900868021">
+    <state width="1899" height="349" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1611001604695" />
+    <state width="1899" height="349" key="GridCell.Tab.0.left" timestamp="1611001604695">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="93" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1610900868021" />
-    <state width="1899" height="93" key="GridCell.Tab.0.right" timestamp="1610900868022">
+    <state width="1899" height="349" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1611001604695" />
+    <state width="1899" height="349" key="GridCell.Tab.0.right" timestamp="1611001604695">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="93" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1610900868022" />
+    <state width="1899" height="349" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1611001604695" />
     <state x="461" y="162" key="SettingsEditor" timestamp="1610727313327">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="461" y="162" key="SettingsEditor/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1610727313327" />
-    <state x="656" y="343" key="com.intellij.ide.util.TipDialog" timestamp="1610882879611">
+    <state x="656" y="343" key="com.intellij.ide.util.TipDialog" timestamp="1610966367117">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="656" y="343" key="com.intellij.ide.util.TipDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1610882879611" />
+    <state x="656" y="343" key="com.intellij.ide.util.TipDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1610966367117" />
   </component>
 </project>

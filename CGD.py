@@ -6,6 +6,7 @@ from ResNet50 import ResNet50
 class CGD(nn.Module):
     def __init__(self,global_descriptors,feature_dimensions,classes):
         super(CGD,self).__init__()
+
         # -- PART 1 : ResNet50 --
         backbone=ResNet50()
         self.feature_maps=[]
@@ -19,6 +20,7 @@ class CGD(nn.Module):
                 #Add FM (feature maps)
                 self.feature_maps.append(child_module)
         self.feature_maps = nn.Sequential(*self.feature_maps)
+
         # -- PART 2 : Main Module - Multiple Global Descriptors --
         a = int(feature_dimensions/len(global_descriptors))
         self.global_descriptor_list=[]
@@ -34,6 +36,7 @@ class CGD(nn.Module):
             self.main_modules_list.append(nn.Sequential(nn.Linear(2048,a,bias=False),ADD_L2_Normalisation()))
         self.global_descriptor_list=nn.ModuleList(self.global_descriptor_list)
         self.main_modules_list = nn.ModuleList(self.main_modules_list)
+
         # -- PART 3 : Auxiliary Module - Classification Loss --
         self.aux_module= nn.Sequential(nn.BatchNorm1d(2048),nn.Linear(2048, classes, bias=True))#TODO
 
@@ -41,8 +44,7 @@ class CGD(nn.Module):
         GDs = []
         fm=self.feature_maps(x)
         for i in range(len(self.global_descriptor_list)):
-            if i == 0:
-                #Auxiliary module on first GD
+            if i == 0: #Auxiliary module on first GD
                 Cl = self.aux_module(self.global_descriptor_list[i](fm))
             GD = self.main_modules_list[i](self.global_descriptor_list[i](fm))
             GDs.append(GD)
