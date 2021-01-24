@@ -1,4 +1,5 @@
 """
+#Get In_shop classes number
 train_file = open(r"Data/In_Shop_Clothes/In_Shop_train.txt")
 test_file = open(r"Data/In_Shop_Clothes/In_Shop_test.txt")
 test_lab=[]

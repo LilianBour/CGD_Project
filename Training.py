@@ -1,71 +1,39 @@
-import pandas as pd
+import numpy as np
 import torch
-from thop import profile, clever_format
 from torch import nn
 from torch.optim import Adam
 from torch.optim.lr_scheduler import MultiStepLR
-from torch.utils.data import DataLoader
 from tqdm import tqdm
 from CGD import CGD
-from torch.nn import functional
 from LoadDatasets import Data_Load
-import argparse
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import random
+from TripleLoss import batch_hard_triplet_loss
+
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 torch.cuda.empty_cache()
-# PART 1 --Functions--
-class BatchTripletLoss(nn.Module):
-    def __init__(self, margin=1.0):
-        super().__init__()
-        self.margin = margin
 
-    @staticmethod
-    def get_anchor_positive_triplet_mask(target):
-        mask = torch.eq(target.unsqueeze(0), target.unsqueeze(1))
-        mask.fill_diagonal_(False)
-        return mask
-
-    @staticmethod
-    def get_anchor_negative_triplet_mask(target):
-        labels_equal = torch.eq(target.unsqueeze(0), target.unsqueeze(1))
-        mask = ~ labels_equal
-        return mask
-
-    def forward(self, x, target):
-        pairwise_dist = torch.cdist(x.unsqueeze(0), x.unsqueeze(0)).squeeze(0)
-
-        mask_anchor_positive = self.get_anchor_positive_triplet_mask(target)
-        anchor_positive_dist = mask_anchor_positive.float() * pairwise_dist
-        hardest_positive_dist = anchor_positive_dist.max(1, True)[0]
-
-        mask_anchor_negative = self.get_anchor_negative_triplet_mask(target)
-        # make positive and anchor to be exclusive through maximizing the dist
-        max_anchor_negative_dist = pairwise_dist.max(1, True)[0]
-        anchor_negative_dist = pairwise_dist + max_anchor_negative_dist * (1.0 - mask_anchor_negative.float())
-        hardest_negative_dist = anchor_negative_dist.min(1, True)[0]
-
-        loss = (functional.relu(hardest_positive_dist - hardest_negative_dist + self.margin))
-        return loss.mean()
-
-
-# PART 2 --Train--
+# PART 1 --Train--
 #Set param various
-epochs = 2
-batch = 32
+epochs = 30
+batch = 32 #128
 temperature=0.5
-margin=0.1
-evaluation={'loss':[],'acc':[]}
+margin=1
 
 #Load data
-Data_Name="IRMA_XRAY"
+Data_Name="CUB_200_2011"
 Train_loader, Validation_Loader,Test_loader, Len_train, Len_val,Len_test, LabelNb_LabelName, Image_Label_test,ImageName_Idx_Test =Data_Load(Data_Name,batch)
 #Define model (CGD here)
 Dim=1536
 Global_Descriptors = ['S','G','M']
-nb_classes=len(LabelNb_LabelName)+1 #TODO +1???
+nb_classes=len(LabelNb_LabelName)+1
 model=CGD(Global_Descriptors,Dim,nb_classes).to(device)
 optimizer=Adam(model.parameters(),lr=1e-4)#1e-4 was the start changed because loss kept increasing but with 1e-8 accuracy increase slowly
-step_decay = MultiStepLR(optimizer, milestones=[int(0.5 * epochs), int(0.75 * epochs)], gamma=0.1) #Change the lr at 50% a,d 75% (not indicated in the article)
-Triplet_Loss = BatchTripletLoss(margin=margin) #TODO
+step_decay = MultiStepLR(optimizer, milestones=[int(0.5 * epochs), int(0.75 * epochs)], gamma=0.1) #Change the lr at 50% a,d 75% (not indicated in the article) LR0
+#step_decay = MultiStepLR(optimizer, milestones=[int(0.9 * epochs), int(0.95 * epochs)], gamma=0.1) #Change the lr at 90% a,d 95% (not indicated in the article) LR1
+#step_decay = MultiStepLR(optimizer, milestones=[int(0.7 * epochs), int(0.90 * epochs)], gamma=0.1) #Change the lr at 90% a,d 95% (not indicated in the article) LR2
+
 
 #Load Data
 #Train
@@ -83,17 +51,36 @@ if __name__=="__main__":
         accuracy_list.append(0)
         TP=0
         T=0
+        List_For_RankingLoss = []
         for image,label in tqdm(Train_loader):
             image = image.to(device)
+            label_nocuda = label.detach().clone()
             label = label.to(device)
             GDs,Cl=model(image)
-            Rk_loss = Triplet_Loss(GDs, label)  # TODO
-            CrossLoss = nn.CrossEntropyLoss()#TODO add the use of temperature ??
-            Cl_loss = CrossLoss(Cl,label)
-            #triplet_loss = nn.TripletMarginLoss(margin=margin,p=2) or Soft Margin Loss
-            #nn.SoftMarginLoss()
-            T_loss=Rk_loss+Cl_loss
+            Rk_loss = batch_hard_triplet_loss(label,GDs,margin=margin)
+            #Triplet Sampling for Triplet Loss RANDOM
+            """
+            TripletLoss = nn.TripletMarginLoss(margin=margin)
+            list_TL = []
+            for i in range(len(label)):
+                list_TL.append([GDs[i],label[i]])
+            random.shuffle(list_TL)
 
+            anchor = GDs[0]
+            positive = GDs
+            negative = GDs
+            for i in range(len(list_TL)):
+                rand = random.randrange(len(list_TL))
+                if label[rand]==label[i] and torch.allclose(GDs[rand], GDs[i], atol=0)==False:
+                    positive = GDs[i]
+                elif label[rand]!=label[i]:
+                    negative=GDs[i]
+            Rk_loss = TripletLoss(negative, positive, anchor)
+            """
+
+            CrossLoss = nn.CrossEntropyLoss()#TODO add the use of temperature
+            Cl_loss = CrossLoss(Cl,label)
+            T_loss=Rk_loss+Cl_loss
             optimizer.zero_grad()
             T_loss.backward()
             optimizer.step()
@@ -116,7 +103,7 @@ if __name__=="__main__":
                 image = image.to(device)
                 label = label.to(device)
                 GDs, Cl = model(image)
-                Rk_loss = Triplet_Loss(GDs, label)
+                Rk_loss = batch_hard_triplet_loss(label,GDs,margin=margin)
                 CrossLoss = nn.CrossEntropyLoss()
                 Cl_loss = CrossLoss(Cl, label)
                 T_loss = Rk_loss + Cl_loss
@@ -133,11 +120,7 @@ if __name__=="__main__":
             best_loss=val_loss[epoch]
             torch.save(model.state_dict(),"C:\\Users\\lilia\\github\\CGD_Project\\Models\\"+Data_Name+"\\model_"+str(epoch)+"_"+Data_Name+".pt")
 
-
-    import matplotlib.pyplot as plt
-    import matplotlib.patches as mpatches
-
-    # Plot Losses
+    # PART 2 --Plot Losses--
     plt.subplot(1, 2, 1)
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
@@ -160,8 +143,5 @@ if __name__=="__main__":
     plt.tight_layout()
     plt.show()
 
-#TODO 1.check todos + review
-#TODO 2.add other datasets
 
-#TODO add recall an precision ?
 #TODO try to set batch to 128

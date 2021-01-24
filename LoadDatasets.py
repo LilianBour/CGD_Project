@@ -1,5 +1,4 @@
 import random
-import torch
 from csv import reader
 from PIL import Image
 import torchvision.transforms as transforms
@@ -45,7 +44,6 @@ def Data_Load(data_name,batch_size=128,T="train"):
         #Create Train and Test [[PIL img, label as int for Train and Tensor for Test],...]
         for (i,j,k) in zip(images_names_file,images_label_file,train_test_split_file):
             img=Image.open(full_path+i.split()[1]).convert('RGB')
-            #img=cv2.imread(full_path+i.split()[1]) #Reading image with OpenCv, not working because image needed as PIL format
             if k.split()[1]=='1' and T=="train":
                 img = transform_train(img)
                 Image_Lab = [img,int(j.split()[1])]  # ((IMG,LABEL) // torch.as_tensor(int(j.split()[1]),dtype=torch.int64)
@@ -57,10 +55,11 @@ def Data_Load(data_name,batch_size=128,T="train"):
                 Image_Lab = [img, int(j.split()[1])]  #label as tensor needed for the test part, specifically the part where the ranked image are found and saved
                 Image_Label_test.append(Image_Lab)
             c+=1
-            #print("Loading images : ",round(c/11788*100,2),"/100%") #Show data loading progression
+            c = c + 1
+            if c == 1000:  # TODO Remove later just to test net
+                break
 
-
-    if data_name == "New_CUB_200_2011": #Issue with labels, weird behaviour (see Image retrieval folder)
+    if data_name == "New_CUB_200_2011":
         full_path = "Data/CUB_200_2011/"
         train_file = open(r"Data/New_CUB_200_2011/train.txt")
         test_file = open(r"Data/New_CUB_200_2011/test.txt")
@@ -75,9 +74,7 @@ def Data_Load(data_name,batch_size=128,T="train"):
                 img = transform_train(img)
                 Image_Lab = [img, int(i.split()[1])]
                 Image_Label_training.append(Image_Lab)
-                c = c + 1
-                if c == 1000:  # TODO Remove later just to test net
-                    break
+
         if T=="test":
             idx=0
             for i in test_file:
@@ -88,7 +85,6 @@ def Data_Load(data_name,batch_size=128,T="train"):
                 img = transform_test(img)
                 Image_Lab = [img, int(i.split()[1])]
                 Image_Label_test.append(Image_Lab)
-
 
     if data_name == "Stanford_Online_Products":
         full_path = "Data/Stanford_Online_Products/"
@@ -103,23 +99,18 @@ def Data_Load(data_name,batch_size=128,T="train"):
                 img = transform_train(img)
                 Image_Lab = [img, int(i.split()[2])]
                 Image_Label_training.append(Image_Lab)
-                c=c+1
-                if c == 1000:  # TODO Remove later just to test net
-                    break
         if T=="test":
             c=0
+            idx=0
             for i in test_file:
                 img = Image.open(full_path + i.split()[3]).convert('RGB')
-                ImageName_Idx_Test.append([full_path+i.split()[3], i.split()[0]])
+                ImageName_Idx_Test.append([full_path+i.split()[3], idx])
+                idx=idx+1
                 img = transform_test(img)
                 Image_Lab = [img, int(i.split()[2])]
                 Image_Label_test.append(Image_Lab)
-                c = c + 1
-                if c == 1000:  # TODO Remove later just to test net
-                    break
 
     if data_name=="CARS196":
-        #Maybe probel with number of classes
         for i in range(196):
             LabelNb_LabelName.append(i)
         if T=="train":
@@ -135,9 +126,7 @@ def Data_Load(data_name,batch_size=128,T="train"):
                     img = transform_train(img)
                     Image_Lab = [img, label]
                     Image_Label_training.append(Image_Lab)
-                    c = c + 1
-                    if c == 1000:  # TODO Remove later just to test net
-                        break
+
         if T=="test":
             full_path_test = "Data/CARS196/cars_test/"
             test = scipy.io.loadmat('Data/CARS196/cars_test_annos.mat')
@@ -154,11 +143,10 @@ def Data_Load(data_name,batch_size=128,T="train"):
                     img = transform_test(img)
                     Image_Lab = [img, label]
                     Image_Label_test.append(Image_Lab)
-                    c = c + 1
-                    if c == 1000:  # TODO Remove later just to test net
-                        break
+
 
     if data_name=="In_Shop_Clothes":
+        #In clothes type, "1" represents upper-body clothes, "2" represents lower-body clothes, "3" represents full-body clothes
         full_path = "Data/In_Shop_Clothes/"
         train_file = open(r"Data/In_Shop_Clothes/In_Shop_train.txt")
         test_file = open(r"Data/In_Shop_Clothes/In_Shop_test.txt")
@@ -173,9 +161,6 @@ def Data_Load(data_name,batch_size=128,T="train"):
                 img = transform_train(img)
                 Image_Lab = [img, int(i.split()[1])]
                 Image_Label_training.append(Image_Lab)
-                c = c + 1
-                if c == 1000:  # TODO Remove later just to test net
-                    break
         if T == "test":
             idx = 0
             c=0
@@ -186,11 +171,10 @@ def Data_Load(data_name,batch_size=128,T="train"):
                 img = transform_test(img)
                 Image_Lab = [img, int(i.split()[1])]
                 Image_Label_test.append(Image_Lab)
-                c = c + 1
-                if c == 1000:  # TODO Remove later just to test net
-                    break
 
     if data_name == "IRMA_XRAY":
+        #https://www.imageclef.org/2009/medanno
+        #https://www.kaggle.com/raddar/irma-xray-dataset
         if T=="train":
             for i in range(57):
                 LabelNb_LabelName.append(i)
@@ -210,9 +194,6 @@ def Data_Load(data_name,batch_size=128,T="train"):
                         label = int(label)
                         Image_Lab = [img, label]
                         Image_Label_training.append(Image_Lab)
-                    c = c + 1
-                    if c == 1000:  # TODO Remove later just to test net??
-                        break
         if T == "test":
             for i in range(57): #size should be 55 but it's not working when testing
                 LabelNb_LabelName.append(i)
@@ -237,13 +218,14 @@ def Data_Load(data_name,batch_size=128,T="train"):
                         Image_Label_test.append(Image_Lab)
                     c = c + 1
 
-
-
     #Creating validation set from test set. Test = 80%, Validation = 20%
     if T == "train":
         random.shuffle(Image_Label_training)
         Image_Label_train = Image_Label_training[:int((0.8 * len(Image_Label_training)))]
         Image_Label_val = Image_Label_training[int((0.8 * len(Image_Label_training))):]
+        if data_name=="In_Shop_Clothes":
+            Image_Label_train = Image_Label_training[:int((0.9 * len(Image_Label_training)))]
+            Image_Label_val = Image_Label_training[int((0.9 * len(Image_Label_training))):]
         Train_Loader = DataLoader(Image_Label_train, batch_size=batch_size, shuffle=True, num_workers=0)
         Validation_Loader = DataLoader(Image_Label_val, batch_size=batch_size, shuffle=True, num_workers=0)
         Test_Loader = []
@@ -258,6 +240,11 @@ def Data_Load(data_name,batch_size=128,T="train"):
     return Train_Loader,Validation_Loader,Test_Loader,Len_train,Len_val,Len_test,LabelNb_LabelName,Image_Label_test,ImageName_Idx_Test
 
 
+"""
+                c = c + 1
+                if c == 1000:  # TODO Remove later just to test net
+                    break
+"""
 if __name__ == '__main__':
     #Test code here
     print("Test")

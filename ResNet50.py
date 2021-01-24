@@ -7,20 +7,14 @@ class Basic(nn.Module):
     multip=1
     def __init__(self,input,output,stride=1,downsample=None,groups=1, width=64, padding=1,normalisation_layer=None):
         super(Basic,self).__init__()
-        #TODO Useful ??
         if normalisation_layer == None :
             normalisation_layer=nn.BatchNorm2d
-        #TODO remove later it just raises errors
-        if groups != 1 or width != 64:
-            raise ValueError('BasicBlock only supports groups=1 and base_width=64')
-        if padding > 1:
-            raise NotImplementedError("Dilation/Padding > 1 not supported in BasicBlock")
         # --WARNING--self.conv1/self.downsamble  downsample when stride !=1 --WARNING--
         #Part 1
         self.conv1=nn.Conv2d(input,output, kernel_size=3, stride=stride, padding=1, groups=1, dilation=1, bias=False)
         self.norm1=normalisation_layer(output)
         # ReLU
-        self.ReLU=nn.ReLU(inplace=True)#TODO try without inplace because the default is false
+        self.ReLU=nn.ReLU(inplace=True)
         # Part 2
         self.conv2=nn.Conv2d(output,output, kernel_size=3, stride=1, padding=1, groups=1, dilation=1, bias=False)
         self.norm2=normalisation_layer(output)
@@ -47,7 +41,6 @@ class BottleNeck(nn.Module):
     def __init__(self,input,output,stride=1,downsample=None,groups=1, width=64, padding=1,normalisation_layer=None):
         super(BottleNeck, self).__init__()
         actual_width=int(output*(width/64))*groups #Modified this line it may not work
-        # TODO Useful ??
         if normalisation_layer == None:
             normalisation_layer = nn.BatchNorm2d
         # --W--self.conv1/self.downsamble  downsample when stride !=1 --W--
@@ -61,7 +54,7 @@ class BottleNeck(nn.Module):
         self.conv3= nn.Conv2d(actual_width, output*4, kernel_size=1 , stride=1,bias=False)
         self.norm3=normalisation_layer(output*4)
         # ReLU
-        self.ReLU=nn.ReLU(inplace=True)#TODO try without inplace because the default is false
+        self.ReLU=nn.ReLU(inplace=True)
         # Assign values
         self.downsample = downsample
         self.stride = stride
@@ -91,6 +84,7 @@ print("\n˅ Basic ˅")
 BS = Basic(64 ,64)
 summary(BS, (64, 224, 224))
 """
+
 # -- PART 2 : Building ResNet --
 class ResNet(nn.Module):
     def __init__(self,block,layers,classes=1000,groups=1,gr_width=64,stride_to_dil=None,normalisation_layer=None):
@@ -103,9 +97,6 @@ class ResNet(nn.Module):
         self.width = gr_width
         if stride_to_dil == None:
             stride_to_dil=[False,False,False]
-        #TODO delete later it's just an error
-        if len(stride_to_dil)!=3:
-            raise ValueError("stride_to_dil should be non or a 3-elem tuple, got : ",format(stride_to_dil))
         self.conv1 = nn.Conv2d(3, self.input, kernel_size=7, stride=2, padding=3, bias=False)
         self.norm1 = normalisation_layer(self.input)
         self.ReLU = nn.ReLU(inplace=True)
@@ -116,13 +107,14 @@ class ResNet(nn.Module):
         self.stage4 = self.Create_Layer(block, 512, layers[3], stride=2, padd=stride_to_dil[2])
         self.AvgPool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(512 * block.multip, classes)
-        #TODO V???V
+
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
             elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
+
     def Create_Layer(self,block,output,block_,stride=1,padd=False):
         downsample=None
         last_padding=self.padding
@@ -149,6 +141,7 @@ class ResNet(nn.Module):
         x = self.fc(x)
         return x
 
+# -- PART 3 : ResNet & Pretrained model --
 def ResNet50(**kwargs):
     model = ResNet(BottleNeck, [3, 4, 6, 3],**kwargs)
     state_dict=load_state_dict_from_url("https://download.pytorch.org/models/resnet50-19c8e357.pth",progress=True)
@@ -164,3 +157,11 @@ print("˅ Original ˅ ")
 import torchvision.models as models
 summary(models.resnet50(False), (3, 224, 224))
 """
+
+
+#Sources and help to understand ResNet :
+#- https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py
+# - https://www.youtube.com/watch?v=lugkZaFj4x8
+# - https://erikgaas.medium.com/resnet-torchvision-bottlenecks-and-layers-not-as-they-seem-145620f93096
+# - https://towardsdatascience.com/understand-and-implement-resnet-50-with-tensorflow-2-0-1190b9b52691
+
