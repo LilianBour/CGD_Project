@@ -54,10 +54,7 @@ def Data_Load(data_name,batch_size=128,T="train"):
                 img = transform_test(img)
                 Image_Lab = [img, int(j.split()[1])]  #label as tensor needed for the test part, specifically the part where the ranked image are found and saved
                 Image_Label_test.append(Image_Lab)
-            c+=1
-            c = c + 1
-            if c == 1000:  # TODO Remove later just to test net
-                break
+
 
     if data_name == "New_CUB_200_2011":
         full_path = "Data/CUB_200_2011/"
@@ -176,7 +173,7 @@ def Data_Load(data_name,batch_size=128,T="train"):
         #https://www.imageclef.org/2009/medanno
         #https://www.kaggle.com/raddar/irma-xray-dataset
         if T=="train":
-            for i in range(57):
+            for i in range(57): #size should be 57 but there's two missing class in test
                 LabelNb_LabelName.append(i)
             full_path_train="Data/IRMA_XRAY/train_img/"
             with open('Data/IRMA_XRAY/ImageCLEFmed2009_train.csv', 'r') as read_obj:
@@ -188,14 +185,14 @@ def Data_Load(data_name,batch_size=128,T="train"):
                     label= row[0].split(";")[2]
                     img = Image.open(img_path).convert('RGB')
                     img = transform_train(img)
-                    if label == '\\N':
+                    if label == '51' or label == '54' or label == '\\N': #skip if this is one of the test missing class
                         c=c #CONTINUE not working ?
                     else :
                         label = int(label)
                         Image_Lab = [img, label]
                         Image_Label_training.append(Image_Lab)
         if T == "test":
-            for i in range(57): #size should be 55 but it's not working when testing
+            for i in range(57):
                 LabelNb_LabelName.append(i)
             full_path_test = "Data/IRMA_XRAY/test_img/"
             idx=0

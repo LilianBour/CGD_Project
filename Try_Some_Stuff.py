@@ -18,24 +18,26 @@ for i in test_file:
 print(len(test_lab)," ",len(train_lab))
 print(test_lab,"\n",train_lab)
 """
-"""
+
 #Get number of classes in IRMA_XRAY
 from _csv import reader
-test_lab=[]
+train_lab=[]
 with open('Data/IRMA_XRAY/ImageCLEFmed2009_train.csv', 'r') as read_obj:
     csv_reader = reader(read_obj)
     c=0
     next(csv_reader)  # Skip the header
     for row in csv_reader:
         label = row[0].split(";")[2]
+        if label == '51' or label == '54':  # skip if this is one of the test missing class
+            continue
         if label == '\\N':
             c = c  # CONTINUE not working ?
         else:
             label = int(label)
-            if not label in test_lab:
-                test_lab.append(label)
+            if not label in train_lab:
+                train_lab.append(label)
 
-train_lab=[]
+test_lab=[]
 with open('Data/IRMA_XRAY/ImageCLEFmed2009_test.csv', 'r') as read_obj:
     csv_reader = reader(read_obj)
     c=0
@@ -46,15 +48,17 @@ with open('Data/IRMA_XRAY/ImageCLEFmed2009_test.csv', 'r') as read_obj:
             c = c  # CONTINUE not working ?
         else:
             label = int(label)
-            if not label in train_lab:
-                train_lab.append(label)
+            if not label in test_lab:
+                test_lab.append(label)
+print(len(test_lab)," ",len(train_lab))
+test_lab.sort()
+train_lab.sort()
 print(len(test_lab)," ",len(train_lab))
 print(test_lab,"\n",train_lab)
-x=[]
-for i in range(57):
-    x.append(i)
-print(len(x))
-"""
+print(type(test_lab[0]))
+#51 and 54 of test removed
+
+
 """
 #InShop create txt [img name, label, train/test] to load data without needing to loop both files
 write_train = open(r"Data/In_Shop_Clothes/In_Shop_train.txt","w+")

@@ -14,7 +14,7 @@ torch.cuda.empty_cache()
 
 if __name__ == '__main__':
     Data_Name = "CUB_200_2011"
-    Model_NB="6"
+    Model_NB="22"
     #--QUERY IMAGE--
         #CUB_200_2011
     img_name = ["images/017.Cardinal/Cardinal_0047_17673.jpg","images/078.Gray_Kingbird/Gray_Kingbird_0004_70293.jpg","images/080.Green_Kingfisher/Green_Kingfisher_0028_70981.jpg","images/161.Blue_winged_Warbler/Blue_Winged_Warbler_0060_161888.jpg","images/101.White_Pelican/White_Pelican_0025_97604.jpg"]
@@ -113,7 +113,6 @@ if __name__ == '__main__':
         os.mkdir(retrieval_path)
         query_image.save('{}/query_img.jpg'.format(retrieval_path))
         for num, index in enumerate(idx):
-            print(num,index)
             retrieval_image = Image.open(data_test_images[index.item()]).convert('RGB').resize((224, 224), resample=Image.BILINEAR)
             draw = ImageDraw.Draw(retrieval_image)
             retrieval_label = data_test_labels[index.item()]

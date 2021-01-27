@@ -3,13 +3,13 @@
   <component name="ChangeListManager">
     <list default="true" id="8b124e8d-2a41-4f50-89fd-a8f38b1b4049" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CGD.py" beforeDir="false" afterPath="$PROJECT_DIR$/CGD.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Graphs/30E_lr1e04_PreTrained_TrainAndVal_Shuffle_CUB200.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/LoadDatasets.py" beforeDir="false" afterPath="$PROJECT_DIR$/LoadDatasets.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ResNet50.py" beforeDir="false" afterPath="$PROJECT_DIR$/ResNet50.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Test.py" beforeDir="false" afterPath="$PROJECT_DIR$/Test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Training.py" beforeDir="false" afterPath="$PROJECT_DIR$/Training.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Try_Some_Stuff.py" beforeDir="false" afterPath="$PROJECT_DIR$/Try_Some_Stuff.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Website/CGD.html" beforeDir="false" afterPath="$PROJECT_DIR$/Website/CGD.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Website/old website/CGD.html" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,7 +41,7 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager" selected="Python.Training">
-    <configuration name="LoadDatasets (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="ResNet50" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="CGD_Project" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -53,7 +53,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/LoadDatasets.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ResNet50.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -150,9 +150,9 @@
       <list>
         <item itemvalue="Python.Training" />
         <item itemvalue="Python.Test (1)" />
-        <item itemvalue="Python.test_to_delete" />
         <item itemvalue="Python.Try_Some_Stuff" />
-        <item itemvalue="Python.LoadDatasets (1)" />
+        <item itemvalue="Python.ResNet50" />
+        <item itemvalue="Python.test_to_delete" />
       </list>
     </recent_temporary>
   </component>
@@ -194,34 +194,34 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="739" y="274" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1610481632136" />
-    <state width="1899" height="220" key="GridCell.Tab.0.bottom" timestamp="1611447787710">
+    <state width="1899" height="324" key="GridCell.Tab.0.bottom" timestamp="1611762112019">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="293" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1611230051824" />
-    <state width="1899" height="220" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1611447787710" />
-    <state width="1899" height="220" key="GridCell.Tab.0.center" timestamp="1611447787710">
+    <state width="1899" height="208" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1611682903806" />
+    <state width="1899" height="324" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1611762112019" />
+    <state width="1899" height="324" key="GridCell.Tab.0.center" timestamp="1611762112018">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="293" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1611230051824" />
-    <state width="1899" height="220" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1611447787710" />
-    <state width="1899" height="220" key="GridCell.Tab.0.left" timestamp="1611447787710">
+    <state width="1899" height="208" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1611682903806" />
+    <state width="1899" height="324" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1611762112018" />
+    <state width="1899" height="324" key="GridCell.Tab.0.left" timestamp="1611762112018">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="293" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1611230051824" />
-    <state width="1899" height="220" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1611447787710" />
-    <state width="1899" height="220" key="GridCell.Tab.0.right" timestamp="1611447787710">
+    <state width="1899" height="208" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1611682903806" />
+    <state width="1899" height="324" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1611762112018" />
+    <state width="1899" height="324" key="GridCell.Tab.0.right" timestamp="1611762112018">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="293" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1611230051824" />
-    <state width="1899" height="220" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1611447787710" />
+    <state width="1899" height="208" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1611682903806" />
+    <state width="1899" height="324" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1611762112018" />
     <state x="461" y="162" key="SettingsEditor" timestamp="1610727313327">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="461" y="162" key="SettingsEditor/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1610727313327" />
-    <state x="-1264" y="343" key="com.intellij.ide.util.TipDialog" timestamp="1611193461457">
+    <state x="-1264" y="343" key="com.intellij.ide.util.TipDialog" timestamp="1611658264333">
       <screen x="-1920" y="0" width="1920" height="1040" />
     </state>
     <state x="-1264" y="343" key="com.intellij.ide.util.TipDialog/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1611133621949" />
-    <state x="-1264" y="343" key="com.intellij.ide.util.TipDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1611193461457" />
+    <state x="-1264" y="343" key="com.intellij.ide.util.TipDialog/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1611658264333" />
   </component>
 </project>

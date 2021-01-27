@@ -19,20 +19,20 @@ torch.cuda.empty_cache()
 epochs = 30
 batch = 32 #128
 temperature=0.5
-margin=1
+margin=0.1
 
 #Load data
-Data_Name="CUB_200_2011"
+Data_Name="New_CUB_200_2011"
 Train_loader, Validation_Loader,Test_loader, Len_train, Len_val,Len_test, LabelNb_LabelName, Image_Label_test,ImageName_Idx_Test =Data_Load(Data_Name,batch)
 #Define model (CGD here)
 Dim=1536
 Global_Descriptors = ['S','G','M']
 nb_classes=len(LabelNb_LabelName)+1
 model=CGD(Global_Descriptors,Dim,nb_classes).to(device)
-optimizer=Adam(model.parameters(),lr=1e-4)#1e-4 was the start changed because loss kept increasing but with 1e-8 accuracy increase slowly
-step_decay = MultiStepLR(optimizer, milestones=[int(0.5 * epochs), int(0.75 * epochs)], gamma=0.1) #Change the lr at 50% a,d 75% (not indicated in the article) LR0
+optimizer=Adam(model.parameters(),lr=5e-4)#1e-4 was the start changed because loss kept increasing but with 1e-8 accuracy increase slowly
+#step_decay = MultiStepLR(optimizer, milestones=[int(0.5 * epochs), int(0.75 * epochs)], gamma=0.1) #Change the lr at 50% a,d 75% (not indicated in the article) LR0
 #step_decay = MultiStepLR(optimizer, milestones=[int(0.9 * epochs), int(0.95 * epochs)], gamma=0.1) #Change the lr at 90% a,d 95% (not indicated in the article) LR1
-#step_decay = MultiStepLR(optimizer, milestones=[int(0.7 * epochs), int(0.90 * epochs)], gamma=0.1) #Change the lr at 90% a,d 95% (not indicated in the article) LR2
+step_decay = MultiStepLR(optimizer, milestones=[int(0.7 * epochs), int(0.90 * epochs)], gamma=0.1) #Change the lr at 90% a,d 95% (not indicated in the article) LR2
 
 
 #Load Data
@@ -54,13 +54,13 @@ if __name__=="__main__":
         List_For_RankingLoss = []
         for image,label in tqdm(Train_loader):
             image = image.to(device)
-            label_nocuda = label.detach().clone()
+            #label_nocuda = label.detach().clone()
             label = label.to(device)
             GDs,Cl=model(image)
             Rk_loss = batch_hard_triplet_loss(label,GDs,margin=margin)
-            #Triplet Sampling for Triplet Loss RANDOM
             """
-            TripletLoss = nn.TripletMarginLoss(margin=margin)
+            #Triplet Sampling for Ranking Loss RANDOM
+            RankingLoss = nn.MarginRankingLoss(margin=margin)
             list_TL = []
             for i in range(len(label)):
                 list_TL.append([GDs[i],label[i]])
@@ -75,10 +75,10 @@ if __name__=="__main__":
                     positive = GDs[i]
                 elif label[rand]!=label[i]:
                     negative=GDs[i]
-            Rk_loss = TripletLoss(negative, positive, anchor)
+            Rk_loss = RankingLoss(negative, positive, anchor)
             """
 
-            CrossLoss = nn.CrossEntropyLoss()#TODO add the use of temperature
+            CrossLoss = nn.CrossEntropyLoss()
             Cl_loss = CrossLoss(Cl,label)
             T_loss=Rk_loss+Cl_loss
             optimizer.zero_grad()

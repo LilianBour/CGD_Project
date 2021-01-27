@@ -10,7 +10,7 @@
         <div class="row">
             <div class="column_logo left_logo"> <p><b>Lilian Bour - </b>Master's student in computer science specialized in vision and intelligent machine at University of Paris</p>
             <p><b>Email :</b> lilianbour0@gmail.com | <b>Tel. :</b> +33.6.29.33.29.97 | <b>GitHub :</b> <a href="https://github.com/LilianBour" target="_blank" rel="noopener noreferrer">https://github.com/LilianBour</a> | <b>LinkedIn :</b> <a href="https://www.linkedin.com/in/lilian-bour-99b9121a1/" target="_blank" rel="noopener noreferrer"> https://www.linkedin.com/in/lilian-bour </a></p></div>
-            <div class="column_logo right_logo"> <a href="https://u-paris.fr/en/" target="_blank" rel="noopener noreferrer"><img class="two" src="https://pbs.twimg.com/media/EN6ZheBXsAYZR6y.png" alt="University Logo"></a>
+            <div class="column_logo right_logo"> <p class="logo_p"> <a href="https://u-paris.fr/en/" target="_blank" rel="noopener noreferrer"><img class="two" src="https://pbs.twimg.com/media/EN6ZheBXsAYZR6y.png" alt="University Logo"></a></p>
                  </div>
         </div>
     </div>
@@ -21,53 +21,67 @@
         <h1>Implementation project : Combination of Multiple Global Descriptors for Image Retrieval</h1>
 
         <h2>1. Introduction</h2>
-        <p>The goal of this project is to implement the GCD (combination of multuple global descriptors) model presented in the article of Jun, Ko et al (figure 1). And to evaluate the model with the same dataset such as CARS196 and CUB200-2011.</p>
+        <p>The goal of this project is to implement the CGD (combination of multiple global descriptors) model presented in the article of Jun, Ko et al (figure 1). And to evaluate the model with the same dataset such as CARS196 and CUB200-2011.
+        CGD uses ResNet-50 as Backbone, but with the down-sampling between step 3 and 4 removed. This will improve performances and return feature maps of size 14*14 instead of 7*7.
+        Those feature maps will be used to calculate a ranking loss with the main module and the classification loss with the auxiliary module. </p>
         <!--Centered image with legend-->
         <p class="center_image"><img class="one" src="Images\CGD_Framework.png" alt="CGD Model"> </p> 
         <p class="center_image">Figure 1. CGD Framework</p> 
         <h2>2. Method</h2>
-        <h3>a. CNN Backbone</h3>
-        <p>ResNet-50 is used, but the down-sampling operation between the step 3 and 4 is removed to improve performances. The input will be an image of size 224x224 and the output a feature map of size 14x14.
-             Furthermore, a batch size of 128, Temperature for softmax of 0.5 and a Margin m for the triplet loss of 0.1 are used. The input will be :</p>
+        <p>The model will be tested on multiple dataset : </p>
         <ul>
-            <li>resized to 254x254, cropped randomly to 224x224 and finally fliped horizontally randomly during training</li>
-            <li>resized to 224x224 during for the tests</li>
+            <li>CUB-200-2011 (original-200 classes)</li>
+            <li>CUB-200-2011 (authors-100 classes)</li>
+            <li>CARS196</li>
+            <li>In Shop Clothes</li>
+            <li>Stanford Online Products</li>
+            <li>IRMA X-Rays</li>
         </ul> 
-        <h3>b. Main module : Multiple Global Descriptors</h3>
-        <p>Multiple global descriptors can be used before concatenating the results of the feature vectors. For example : </p>
-        <ul>
-            <li>Sum pooling of convolutions (<b>SPoC</b>)</li>
-            <li>Maximum activation of convolutions (<b>MAC</b>) </li>
-            <li>Generalized mean pooling (<b>GeM</b>)</li>
-        </ul>
-        <p>First, the global descriptors will use a pooling process on the Outputs X of size CxHxW. The result will then see it's dimensionality reduced, and will be normalized.
-            After this the feature vectors will be combined using concatenation and l2-normalization.
+        <h2>3. Results</h2>
+        <p>For all datasets we can see that the validation accuracy stop progressing near 50% of the epochs because the training accuracy is close to 100%. We could thinkg that 
+            the model is overfitting because better results are optained with 120k images (Stanford Online Products) than with 6k images (CUB-200-2011).
         </p>
-        <h3>b. Auxiliary Module : Classification Loss</h3>
-        <p>The auxiliary module will be used to fine tune the CNN backbone with the first global descriptor using a classification defined on the figure 2.</p>
-        <p class="center_image"><img class="one" src="Images\LSoftmax_formula.png" alt="Softmax formula"> </p> 
-        <p class="center_image">Figure 2. Softmax formula</p> 
-        <p>With : </p>
+        <p class="graphs"><img class="gra" src="Images\Results_First.PNG" alt="Results for all dataset"> </p> 
+                <p class="graphs_txt">Figure 2. Training and Validation accuracy for all datasets</p>
+        <h2>4. Exploration</h2>
+        <h3>4.1 Learning rate modification</h3>
+        <p>The milestones used for the learning rate are changed because the first milestone is at 50% and the accuracy stagnates afet 50%. 3 differents condition are used : </p>
         <ul>
-            <li>N : batch size</li>
-            <li>M : number of classes</li>
-            <li>yi : identity label of ith input</li>
-            <li>W : trainable weight</li>
-            <li>b : bias</li>
-            <li>f : first Global Descriptors </li>
-            <li>T : temperature set to default value 1</li>
-        </ul>
-        
-
+            <li>LR1 : Changes at 50% and 75%</li>
+            <li>LR1 : Changes at 90% and 95%</li>
+            <li>LR1 : Changes at 70% and 90%</li>
+        </ul> 
+        <p class="graphs"><img class="gra" src="Images\Learning_Rate_Milestones.png" alt="Results of LR modification"> </p> 
+        <p class="graphs_txt">Figure 3. Modification of the learning rate milestones</p>
+        <p>Those tests were realised with the dataset CUB-200-2011 (authors). There is little to no improvement.</p>
+        <h3>4.2 Losses tests</h3>
+        <p>The losses are evaluated individualy. It allows to see that the batch hard triple loss used as ranking loss stats and stays near 0. Thus it does not improve the model, only the classification loss does.
+        The following assumption is made: A batch at 32 instead of 128 causes a bad loss. Indeed, we need images of the same class and of different classes. But the more class we have, the more complicated it will be.
+        This will be tested using two triplet selection : Random and Optimised (Triplet mining).</p>
+        <p class="graphs"><img class="gra" src="Images\BatchHardTripletLoss.png" alt="Results of Triplet modification"> </p> 
+        <p class="graphs_txt">Figure 4. Modification of triplet selection</p>
+        <p>As showed here, the results are similar for both triplet selection. There is not improvement with triplet mining, it indicates that our batch is too small. Indeed the batch used is 32, but in their 
+            article, Jun, Kao et al used 128. But it is not possible to used a larger batch because the GPU will not handle larger batchs. As we can see below, a batch of 32 images fully uses the GPU.
+        </p>
+        <div class="row">
+            <div class="column left"><p class="center_image"><img class="gpu" src="Images\GPU_Empty.png" alt="Standart GPU usage"> </p> 
+                <p class="center_image">Figure 5. Standart GPU usage</p></div>
+            <div class="column middle"></div>
+            <div class="column right"><p class="center_image"><img class="gpu" src="Images\GPU_32Batch_EnCours.png" alt="GPU usage durign training"> </p> 
+                <p class="center_image">Figure 6. GPU usage durign training</p></div>
+        </div>
+        <p>This explains why the accuracy is so low, as showed in Jun, Kao and al's paper, the ranking loss should be more important than the classification loss.</p>
+        <h2>5. Visualization of the results</h2>
+        <p class ="graphs"><img class="three" src="Images\Vis_Res.png" alt="Results visualization"> </p> 
+        <p class="graphs_txt">Figure 7. Results</p>
+        <p> </p>
+        <p>We can see some good results highlighted in green, and bad ones in red. It is interesting to note that even if the class is not good, the results are consistent because the cars and birds are similar and of the same color.</p>
         <!--Example two columns-->
         <div class="row">
             <div class="column left"></div>
             <div class="column middle"></div>
             <div class="column right"></div>
         </div>
-
-
-        <h2>3. Experiments and Results</h2>
         
     </div>
 </div>
@@ -91,10 +105,24 @@
     }
 
     .center_image {
+    text-align:center;
     display: block;
     margin-left: auto;
     margin-right: auto;
     width: 45%;
+    }
+    .graphs {
+    text-align:center;
+    display:block;
+    }
+    .logo_p {
+    text-align:right;
+    display:block;
+    }
+    .graphs_txt {
+    padding-bottom: 30px;
+    text-align:center;
+    display:block;
     }
     .core {
     text-align: left;
@@ -120,27 +148,41 @@
     }
 
     img.one {
-    height: 50%;
-    width: 50%;
-    min-width:750px;
+    height: 90%;
+    width: 90%;
+    min-width:350;
     }
     img.two {
     height: 85px;
     width: 85px;
     min-width:50px;
     }
+    img.three {
+    height: 90%;
+    width: 90%;
+    min-width:350px;
+    }
+    img.gpu {
+    height: 100%;
+    width: 100%;
+    min-width:200px;
+    }
+    img.gra {
+    height: 55%;
+    width: 55%;
+    }
     .column_logo {
     float: left;
     }
 
     .left_logo {
-    width: 95%;
+    width: 80%;
     }
     .middle_logo {
     width: 1%;
     }
     .right_logo {
-    width: 1%;
+    width: 19%;
     }
  
     .column {
@@ -148,13 +190,13 @@
     }
 
     .left {
-    width: 30%;
+    width: 50%;
     }
     .middle {
     width: 1%;
     }
     .right {
-    width: 69%;
+    width: 50%;
     }
     .row:after {
     content: "";

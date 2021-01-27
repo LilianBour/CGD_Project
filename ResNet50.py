@@ -149,14 +149,17 @@ def ResNet50(**kwargs):
 
 #Comparison Models (Ours vs Original)
 #Thanks to https://text-compare.com we can see that we get 14x14 FM instead of 7x7 due to the removing of the downsampling between stage 3 and stage 4
-"""
-from torchsummary import summary
-print("˅ Ours ˅ ")
-summary(ResNet50(), (3, 224, 224))
-print("˅ Original ˅ ")
-import torchvision.models as models
-summary(models.resnet50(False), (3, 224, 224))
-"""
+
+if __name__=="__main__":
+    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+
+    from torchsummary import summary
+    print("˅ Ours ˅ ")
+    summary(ResNet50().to(device), (3, 224, 224))
+    print("˅ Original ˅ ")
+    import torchvision.models as models
+    summary(models.resnet50(False).to(device), (3, 224, 224))
+
 
 
 #Sources and help to understand ResNet :
